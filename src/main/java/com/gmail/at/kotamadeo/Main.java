@@ -1,6 +1,7 @@
 package com.gmail.at.kotamadeo;
 
 import com.gmail.at.kotamadeo.game.GameProgress;
+import lombok.SneakyThrows;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -27,18 +28,15 @@ public class Main {
         gameProgresses.add(new GameProgress(120, 6, 48, 6200.25));
         List<String> pathsSave = new ArrayList<>();
         for (GameProgress gameProgress : gameProgresses) {
-            try {
                 saveGame(gameDirectoryPath, gameProgress, pathsSave);
                 toZip(gameDirectoryPath, pathsSave);
-
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
         }
         deleteFileByPath(pathsSave);
     }
 
-    private static void saveGame(Path path, GameProgress data, List<String> pathSaves) throws IOException {
+
+    @SneakyThrows
+    private static void saveGame(Path path, GameProgress data, List<String> pathSaves) {
         Files.createFile(Path.of(path + "\\save" + (++counterBeforeFileCreation) + ".dat"));
         String pathForSave = path + "\\save" + (++counterAfterFileCreation) + ".dat";
         try (ObjectOutputStream objectOutputStream =
@@ -48,7 +46,8 @@ public class Main {
         }
     }
 
-    private static void toZip(Path path, List<String> files) throws IOException {
+    @SneakyThrows
+    private static void toZip(Path path, List<String> files) {
         try (ZipOutputStream zipOutputStream = new ZipOutputStream(new FileOutputStream(path + zipName))) {
             for (String file : files) {
                 zipOutputStream.putNextEntry(new ZipEntry(new File(file).getName()));
@@ -58,13 +57,10 @@ public class Main {
         }
     }
 
+    @SneakyThrows
     private static void deleteFileByPath(List<String> files) {
         for (String file : files) {
-            try {
                 Files.deleteIfExists(Path.of(file));
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
         }
     }
 }
